@@ -12,4 +12,8 @@ spec = do
       parseCommands sampleCommands
         `shouldBe` pure [Command Forward 5, Command Down 5, Command Forward 8, Command Up 3, Command Down 8, Command Forward 2]
     it "part 1: run" $
-      (run <$> parseCommands sampleCommands) `shouldBe` pure (Position 15 10)
+      (run <$> parseCommands sampleCommands) `shouldBe` pure (Position 15 10 0)
+    it "part 2: forward 5" $
+      run2 [Command Forward 5] `shouldBe` Position 5 0 0
+    it "part 2: forward 5, down 5, forward 8" $
+      run2 [Command Forward 5, Command Down 5, Command Forward 8] `shouldBe` Position 13 40 5

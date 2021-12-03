@@ -5,10 +5,13 @@ module Aoc.Day02 (
   Position(..),
   parseCommands,
   run,
-  part1
+  run2,
+  part1,
+  part2
 ) where
 
 import Data.Bifunctor (first, bimap)
+import Data.List (foldl')
 import Data.Text (Text)
 import Data.Functor (($>))
 import Data.Void
@@ -44,24 +47,36 @@ pCommands = (pCommand `sepBy` newline) <* eof
 parseCommands :: Text -> Either String [Command]
 parseCommands = first show . parse pCommands ""
 
-data Position = Position { horizontal :: Int, depth :: Int }
+data Position = Position { horizontal :: Int, depth :: Int, aim :: Int }
   deriving (Eq)
 
 instance Show Position where
-  show (Position h d) = "Position (h: " ++ show h ++ ", d: " ++ show d ++ ", mult: " ++ show (h*d) ++ ")"
+  show (Position h d a) = "Position (h: " ++ show h ++ ", d: " ++ show d ++ ", aim: " ++ show a ++ ", mult: " ++ show (h*d) ++ ")"
 
 run :: [Command] -> Position
 run =
-  let step (Command instr arg) (Position h d) =
+  let step (Position h d _) (Command instr arg) =
         case instr of
-          Forward -> Position (h + arg) d
-          Down -> Position h (d + arg)
-          Up -> Position h (d - arg)
-  in foldr step (Position 0 0)
+          Forward -> Position (h + arg) d 0
+          Down -> Position h (d + arg) 0
+          Up -> Position h (d - arg) 0
+  in foldl' step (Position 0 0 0)
 
-runAndDescribe :: Text -> String
-runAndDescribe =
-  either show (show . run) . parseCommands
+runAndDescribe :: ([Command] -> Position) -> Text -> String
+runAndDescribe runner =
+  either show (show . runner) . parseCommands
 
 part1 :: IO String
-part1 = runAndDescribe <$> T.readFile "data/day02.txt"
+part1 = runAndDescribe run <$> T.readFile "data/day02.txt"
+
+run2 :: [Command] -> Position
+run2 =
+  let step (Position h d a) (Command instr arg) =
+        case instr of
+          Forward -> Position (h + arg) (d + arg * a) a
+          Down -> Position h d (a + arg)
+          Up -> Position h d (a - arg)
+  in foldl' step (Position 0 0 0)
+
+part2 :: IO String
+part2 = runAndDescribe run2 <$> T.readFile "data/day02.txt"
