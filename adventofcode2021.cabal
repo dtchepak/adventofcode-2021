@@ -10,8 +10,11 @@ extra-source-files: CHANGELOG.md
 
 library
     exposed-modules:  Aoc,
-                      Aoc.Day01
+                      Aoc.Day01,
+                      Aoc.Day02
     build-depends:    base ^>=4.14.3.0
+                      , megaparsec ^>=9.2
+                      , text ^>=1.2.4
     hs-source-dirs:   src
     default-language: Haskell2010
 
@@ -32,3 +35,4 @@ test-suite adventofcode2021-test
     other-modules:    Aoc.Day01Spec
     build-depends:    adventofcode2021, base ^>=4.14.3.0, hspec ^>=2.9, QuickCheck ^>=2.14
     build-tool-depends:  hspec-discover:hspec-discover == 2.*
+    ghc-options: -Wno-missing-home-modules
